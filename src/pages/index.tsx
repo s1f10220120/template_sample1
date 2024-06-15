@@ -1,57 +1,98 @@
+import { useState } from 'react';
 import styles from './index.module.css';
 
+const initialBoard: number[][] = [
+  [0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 0, 0, 1, 2, 0, 0, 0],
+   [0, 0, 0, 2, 1, 0, 0, 0],
+   [0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 0, 0, 0, 0, 0, 0, 0],
+   [0, 0, 0, 0, 0, 0, 0, 0],
+];
+
 const Home = () => {
+  const [board, setBoard] = useState<number[][](initialBoard)>;
+  const directions = [
+    [-1, -1],
+    [-1, 0],
+    [-1, 1],
+    [0, -1],
+    [0, 1],
+    [1, -1],
+    [1, 0],
+    [1, 1],
+  ];
+
+  const contStones = (board: number[][]) => {
+    let black = 0;
+    let white = 0;
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        if (board[y][x] === 1) black++;
+        else if (board[y][x] === 2) white++;
+      }
+    }
+    return { black, white };
+  };
+  const [turnColor, setTurnColor] = useState(1);
+  const clickCell = (x: number, y: number) => {
+    const newboard = JSON.parse(JSON.stringify(board));
+    if (newboard[y][x] !== 0) return;
+    for (const direction of directions) {
+      for (let distance = 1; distance < 8; distance++) {
+        if (newboard[y + direction[0] * distance] === undefined) break;
+        else if (newboard[y + direction[0] * distance][x + direction[1] * distance] === 0) break;
+        else if (newboard[y + direction[0] * distance][x + direction[1] * distance] === undefined)
+          break;
+        else if (newboard[y + direction[0] * distance][x + direction[1] * distance] === turnColor) {
+          if (distance > 1) {
+            for (let back = distance; back >= 0; back--) {
+              newboard[y + direction[0] * back][x + direction[1] * back] = turnColor;
+            }
+            setBoard(newboard);
+            setTurnColor(3 - turnColor);
+          }
+          break;
+        } else if (
+          newboard[y + direction[0] * distance][x + direction[1] * distance] ===
+          3 - turnColor
+        )
+          continue;
+      }
+    }
+  };
+
+  const resetBoard = () => {
+    setBoard()
+  };
+
+  const { black, white } = contStones(board);
+
   return (
     <div className={styles.container}>
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code} style={{ backgroundColor: '#fafafa' }}>
-            pages/index.js
-          </code>
-        </p>
-
-        <div className={styles.grid}>
-          <a className={styles.card} href="https://nextjs.org/docs">
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a className={styles.card} href="https://nextjs.org/learn">
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a className={styles.card} href="https://github.com/vercel/next.js/tree/master/examples">
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            className={styles.card}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
-        </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <img src="vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      <div className={styles.turn}>
+        <span>Current Turn: {turnColor === 1 ? 'Black' : 'White'}</span>
+      </div>
+      <div className={styles.score}>
+        <div>Black: {black}</div>
+        <div>White: {white}</div>
+      </div>
+      <div className={styles.board}>
+        {board.map((row, y) =>
+          row.map((color, x) => (
+            <div className={styles.cell} key={`${x}-${y}`} onClick={() => clickCell(x, y)}>
+              <div
+                className={styles.stone}
+                style={{
+                  backgroundColor: color === 1 ? 'black' : color === 2 ? 'white' : 'transparent',
+                }}
+              />
+            </div>
+          )),
+        )}
+      </div>
     </div>
   );
 };

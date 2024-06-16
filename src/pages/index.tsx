@@ -3,17 +3,17 @@ import styles from './index.module.css';
 
 const initialBoard: number[][] = [
   [0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 0, 1, 2, 0, 0, 0],
-   [0, 0, 0, 2, 1, 0, 0, 0],
-   [0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 0, 0, 0, 0, 0, 0],
-   [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 1, 2, 0, 0, 0],
+  [0, 0, 0, 2, 1, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0],
 ];
 
 const Home = () => {
-  const [board, setBoard] = useState<number[][](initialBoard)>;
+  const [board, setBoard] = useState<number[][]>(initialBoard);
   const directions = [
     [-1, -1],
     [-1, 0],
@@ -62,10 +62,6 @@ const Home = () => {
           continue;
       }
     }
-  };
-
-  const resetBoard = () => {
-    setBoard()
   };
 
   const { black, white } = contStones(board);
